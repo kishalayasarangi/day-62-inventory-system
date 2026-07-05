@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Inventory System</title>
+  <link rel="stylesheet" href="/static/style.css"/>
+</head>
+<body>
+
+  <div class="container">
+    <h1 class="app-title">📦 Inventory System</h1>
+    <p class="subtitle">Full Stack · Flask + SQLite · Day 62 of 120</p>
+
+    <!-- STATS -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <span id="totalProducts">0</span>
+        <label>Total Products</label>
+      </div>
+      <div class="stat-card warn">
+        <span id="lowStock">0</span>
+        <label>Low Stock</label>
+      </div>
+      <div class="stat-card danger">
+        <span id="outStock">0</span>
+        <label>Out of Stock</label>
+      </div>
+      <div class="stat-card value">
+        <span id="totalValue">₹0</span>
+        <label>Total Value</label>
+      </div>
+    </div>
+
+    <!-- CONTROLS -->
+    <div class="controls-bar">
+      <input type="text" id="searchInput"
+             placeholder="Search products or SKU..."
+             oninput="loadProducts()"/>
+      <select id="categoryFilter" onchange="loadProducts()">
+        <option value="">All Categories</option>
+      </select>
+      <button class="btn-add" onclick="showAddForm()">+ Add Product</button>
+    </div>
+
+    <!-- ADD PRODUCT FORM -->
+    <div class="add-form hidden" id="addForm">
+      <h3>Add New Product</h3>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Product Name *</label>
+          <input type="text" id="pName" placeholder="e.g. Steel Rods"/>
+        </div>
+        <div class="form-group">
+          <label>Category</label>
+          <input type="text" id="pCategory" placeholder="e.g. Raw Material"/>
+        </div>
+        <div class="form-group">
+          <label>SKU</label>
+          <input type="text" id="pSku" placeholder="Auto-generated if empty"/>
+        </div>
+        <div class="form-group">
+          <label>Unit</label>
+          <input type="text" id="pUnit" placeholder="e.g. pcs, kg, liters"/>
+        </div>
+        <div class="form-group">
+          <label>Initial Quantity</label>
+          <input type="number" id="pQty" value="0" min="0"/>
+        </div>
+        <div class="form-group">
+          <label>Min Stock Alert</label>
+          <input type="number" id="pMinStock" value="5" min="0"/>
+        </div>
+        <div class="form-group">
+          <label>Unit Price (₹)</label>
+          <input type="number" id="pPrice" value="0" min="0" step="0.01"/>
+        </div>
+      </div>
+      <div class="form-btns">
+        <button class="btn-save" onclick="addProduct()">+ Add Product</button>
+        <button class="btn-cancel" onclick="hideAddForm()">Cancel</button>
+      </div>
+    </div>
+
+    <!-- TRANSACTION MODAL -->
+    <div class="modal-overlay hidden" id="transModal">
+      <div class="modal">
+        <h3 id="transModalTitle">Stock Transaction</h3>
+        <div class="trans-type-btns">
+          <button class="trans-type active" id="btnIn"
+                  onclick="setTransType('in', this)">📥 Stock In</button>
+          <button class="trans-type" id="btnOut"
+                  onclick="setTransType('out', this)">📤 Stock Out</button>
+        </div>
+        <div class="form-group">
+          <label>Quantity</label>
+          <input type="number" id="transQty" value="1" min="1"/>
+        </div>
+        <div class="form-group">
+          <label>Note (optional)</label>
+          <input type="text" id="transNote" placeholder="e.g. Received from supplier"/>
+        </div>
+        <div class="form-btns">
+          <button class="btn-save" onclick="submitTransaction()">Confirm</button>
+          <button class="btn-cancel" onclick="hideTransModal()">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRODUCTS TABLE -->
+    <div class="table-card">
+      <div class="table-header">
+        <h3>Products</h3>
+        <span id="productCount" style="color:#606070;font-size:0.8rem;"></span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>SKU</th>
+              <th>Category</th>
+              <th>Stock</th>
+              <th>Min Stock</th>
+              <th>Price</th>
+              <th>Value</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="productsBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TRANSACTION HISTORY -->
+    <div class="table-card">
+      <div class="table-header">
+        <h3>Transaction History</h3>
+        <button onclick="loadTransactions()"
+                style="background:#1a1a2e;border:1px solid #2a2a4a;color:#a0a0b0;padding:5px 12px;border-radius:6px;font-size:0.78rem;cursor:pointer;">
+          ↺ Refresh
+        </button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Type</th>
+              <th>Quantity</th>
+              <th>Note</th>
+              <th>Time</th>
+            </tr>
+          </thead>
+          <tbody id="transBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>Day 62 of 120 · Kishalaya Sarangi · NIT Rourkela</footer>
+  <script src="/static/script.js"></script>
+</body>
+</html>
